@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser, UserRolePermission
 from employees.models import Employee
 from django.contrib.auth.models import Permission
+from attendance.models import AttendanceRecord
 
 class RegistrationForm(UserCreationForm):
     first_name = forms.CharField(max_length=50)
@@ -48,3 +49,26 @@ class RegistrationForm(UserCreationForm):
             for permission in permissions:
                 UserRolePermission.objects.create(user_role=user.user_role, permission=permission)
         return user
+    
+
+class RecordAttendanceForm(forms.ModelForm):
+    employee = forms.ModelChoiceField(queryset=Employee.objects.all(), label="Employee")
+    check_in_time = forms.TimeField(required=False, label="Check In Time")
+    check_out_time = forms.TimeField(required=False, label="Check Out Time")
+
+    class Meta:
+        model = AttendanceRecord
+        fields = ['employee', 'check_in_time', 'check_out_time']
+
+    def save(self, commit=True):
+        attendance_record, created = AttendanceRecord.objects.get_or_create(
+            user=self.cleaned_data['employee'].user,
+            date=forms.DateField().today()  # Using the current date
+        )
+        if self.cleaned_data['check_in_time']:
+            attendance_record.check_in_time = self.cleaned_data['check_in_time']
+        if self.cleaned_data['check_out_time']:
+            attendance_record.check_out_time = self.cleaned_data['check_out_time']
+        if commit:
+            attendance_record.save()
+        return attendance_record

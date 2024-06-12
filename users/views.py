@@ -3,10 +3,38 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.shortcuts import render, redirect
-from .forms import RegistrationForm
+
+from attendance.models import AttendanceRecord
+from .forms import RecordAttendanceForm, RegistrationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import CustomUser
+
+
+
+@login_required
+def manage_attendance(request):
+    if request.user.user_role not in ['moderator','superuser']:
+        messages.error(request, 'Unauthorized access.')
+        return redirect('login')
+    
+    if request.method == 'POST':
+        form = RecordAttendanceForm(request.POST)
+        if form.is_valid():
+            form.save()  # Save the attendance record
+            return redirect('users:manage_attendance')  # Refresh the page after form submission
+    else:
+        form = RecordAttendanceForm()
+
+    # Fetch attendance records for displaying
+    attendance_records = AttendanceRecord.objects.select_related('user').all().order_by('-date')
+
+    return render(request, 'manage_attendance.html', {
+        'form': form,
+        'attendance_records': attendance_records
+    })
+
+
 
 @login_required
 def dashboard(request):

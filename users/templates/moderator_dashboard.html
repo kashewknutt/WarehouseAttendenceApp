@@ -1,13 +1,19 @@
-<!-- moderator_dashboard.html -->
+<!-- users/templates/moderator_dashboard.html -->
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moderator Dashboard</title>
 </head>
 <body>
-    <h1>Welcome, Moderator!</h1>
-    <!-- Add content specific to the moderator dashboard -->
+    <h1>Moderator Dashboard</h1>
+
+    <!-- Button to navigate to the Attendance Management Page -->
+    <a href="{% url 'users:manage_attendance' %}">
+        <button>Manage Attendance</button>
+    </a>
+
+    <!-- Other moderator dashboard content -->
+    <!-- For example, summaries or links to other functionalities -->
 </body>
 </html>

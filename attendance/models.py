@@ -1,11 +1,14 @@
 from django.db import models
-from employees.models import Employee  # Import the Employee model from the employees app
+from django.conf import settings
+from django.utils import timezone
 
 class AttendanceRecord(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)  # Link to Employee
-    check_in_time = models.DateTimeField()
-    check_out_time = models.DateTimeField(null=True, blank=True)  # Optional if not checked out yet
-    date = models.DateField()
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date = models.DateField(default=timezone.now)
+    check_in_time = models.TimeField(null=True, blank=True)
+    check_out_time = models.TimeField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=[('present', 'Present'), ('absent', 'Absent')], default='present')
+    notes = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return f'{self.employee.name} - {self.date}'
+        return f"{self.user.username} - {self.date} - {self.status}"

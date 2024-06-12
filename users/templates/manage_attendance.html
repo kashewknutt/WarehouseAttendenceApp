@@ -1,0 +1,51 @@
+<!-- users/templates/manage_attendance.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Attendance</title>
+</head>
+<body>
+    <h1>Manage Attendance</h1>
+
+    <!-- Attendance Management Form -->
+    <h2>Record Attendance</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Attendance</button>
+    </form>
+
+    <!-- Display Attendance Records -->
+    <h2>Attendance Records</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Date</th>
+                <th>Check In Time</th>
+                <th>Check Out Time</th>
+                <th>Status</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in attendance_records %}
+            <tr>
+                <td>{{ record.user.username }}</td>
+                <td>{{ record.date }}</td>
+                <td>{{ record.check_in_time }}</td>
+                <td>{{ record.check_out_time }}</td>
+                <td>{{ record.status }}</td>
+                <td>{{ record.notes }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Link back to the moderator dashboard -->
+    <a href="{% url 'users:moderator_dashboard' %}">
+        <button>Back to Moderator Dashboard</button>
+    </a>
+</body>
+</html>
