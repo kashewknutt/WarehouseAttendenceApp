@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.auth.models import AbstractUser, Permission
 from django.db import models
 
 class CustomUser(AbstractUser):
@@ -16,6 +16,9 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return f'{self.username} - {self.user_role}'
 
-# Add unique related_name arguments for groups and user_permissions
-CustomUser.groups.field.related_name = 'customuser_groups'
-CustomUser.user_permissions.field.related_name = 'customuser_user_permissions'
+class UserRolePermission(models.Model):
+    user_role = models.CharField(max_length=20, choices=CustomUser.USER_ROLES)
+    permission = models.ForeignKey(Permission, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = [['user_role', 'permission']]
