@@ -1,0 +1,20 @@
+<!-- employees/templates/employees/employee_list.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee List</title>
+</head>
+<body>
+    <h1>Employees</h1>
+    <ul>
+        {% for employee in employees %}
+            <li>
+                <a href="{% url 'employee_detail' employee.pk %}">
+                    {{ employee.first_name }} {{ employee.last_name }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
