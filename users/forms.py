@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser, UserRolePermission
 from employees.models import Employee
+from django.contrib.auth.models import Permission
 
 class RegistrationForm(UserCreationForm):
     first_name = forms.CharField(max_length=50)
@@ -34,13 +35,13 @@ class RegistrationForm(UserCreationForm):
             )
             # Assign permissions based on user role
             if user.user_role == 'superuser':
-                permissions = permission.objects.all()
+                permissions = Permission.objects.all()
             elif user.user_role == 'moderator':
-                permissions = permission.objects.filter(
+                permissions = Permission.objects.filter(
                     codename__in=['view_employee', 'view_attendance', 'generate_report']
                 )
             else:  # employee
-                permissions = permission.objects.filter(
+                permissions = Permission.objects.filter(
                     codename__in=['view_own_details', 'view_own_attendance']
                 )
             # Save role permissions to the database
