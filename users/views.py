@@ -22,7 +22,7 @@ def manage_attendance(request):
         form = RecordAttendanceForm(request.POST)
         if form.is_valid():
             form.save()  # Save the attendance record
-            return redirect('users:manage_attendance')  # Refresh the page after form submission
+            return redirect('manage_attendance')  # Refresh the page after form submission
     else:
         form = RecordAttendanceForm()
 

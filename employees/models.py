@@ -1,8 +1,10 @@
 # employees/models.py
 
 from django.db import models
+from users.models import CustomUser  # Import the CustomUser model
 
 class Employee(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='employee_profile')
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
@@ -21,7 +23,7 @@ class Employee(models.Model):
                 self.employee_id = f'{new_id:05d}'
             else:
                 self.employee_id = '00001'
-        super().save(*args, **kwargs)
+        super().save(*args, **kwargs) 
 
     def __str__(self):
         return f'{self.employee_id} - {self.first_name} {self.last_name}'

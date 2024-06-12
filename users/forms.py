@@ -1,3 +1,4 @@
+from datetime import date
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser, UserRolePermission
@@ -26,6 +27,7 @@ class RegistrationForm(UserCreationForm):
             user.save()
             # Create corresponding Employee object
             employee = Employee.objects.create(
+                user=user,
                 first_name=self.cleaned_data['first_name'],
                 last_name=self.cleaned_data['last_name'],
                 email=self.cleaned_data['email'],
@@ -61,14 +63,23 @@ class RecordAttendanceForm(forms.ModelForm):
         fields = ['employee', 'check_in_time', 'check_out_time']
 
     def save(self, commit=True):
+        # Use date.today() to get today's date
+        today = date.today()
+
+        # Get or create the attendance record for the employee on today's date
         attendance_record, created = AttendanceRecord.objects.get_or_create(
             user=self.cleaned_data['employee'].user,
-            date=forms.DateField().today()  # Using the current date
+            date=today  # Use today's date
         )
+
+        # Update the check-in and check-out times if provided
         if self.cleaned_data['check_in_time']:
             attendance_record.check_in_time = self.cleaned_data['check_in_time']
         if self.cleaned_data['check_out_time']:
             attendance_record.check_out_time = self.cleaned_data['check_out_time']
+
+        # Save the attendance record if commit is True
         if commit:
             attendance_record.save()
+
         return attendance_record

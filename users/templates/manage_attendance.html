@@ -32,7 +32,7 @@
         <tbody>
             {% for record in attendance_records %}
             <tr>
-                <td>{{ record.user.username }}</td>
+                <td>{{ record.user.first_name }}</td>
                 <td>{{ record.date }}</td>
                 <td>{{ record.check_in_time }}</td>
                 <td>{{ record.check_out_time }}</td>
@@ -44,7 +44,7 @@
     </table>
 
     <!-- Link back to the moderator dashboard -->
-    <a href="{% url 'users:moderator_dashboard' %}">
+    <a href="{% url 'moderator_dashboard' %}">
         <button>Back to Moderator Dashboard</button>
     </a>
 </body>
