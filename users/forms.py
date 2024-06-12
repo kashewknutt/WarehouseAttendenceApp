@@ -22,6 +22,8 @@ class RegistrationForm(UserCreationForm):
         user = super(RegistrationForm, self).save(commit=False)
         if commit:
             user.save()
+            user.set_password(self.cleaned_data['password1'])  # Properly hash and save password
+            user.save()
             # Create corresponding Employee object
             Employee.objects.create(
                 first_name=self.cleaned_data['first_name'],

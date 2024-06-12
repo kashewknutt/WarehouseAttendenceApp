@@ -17,7 +17,8 @@ class Employee(models.Model):
             last_employee = Employee.objects.order_by('-employee_id').first()
             if last_employee:
                 last_id = int(last_employee.employee_id)
-                self.employee_id = f'{last_id + 1:05d}'
+                new_id = last_id + 1
+                self.employee_id = f'{new_id:05d}'
             else:
                 self.employee_id = '00001'
         super().save(*args, **kwargs)
