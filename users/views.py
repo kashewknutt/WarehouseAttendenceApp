@@ -17,17 +17,39 @@ def dashboard(request):
         return redirect('moderator_dashboard')
     elif user_role == 'employee':
         return redirect('employee_dashboard')
+    else:
+        # Handle unknown user roles
+        messages.error(request, 'Unknown user role.')
+        return redirect('login')
 
 @login_required
 def superuser_dashboard(request):
+    # Ensure only superusers can access this view
+    if request.user.user_role != 'superuser':
+        messages.error(request, 'Unauthorized access.')
+        return redirect('login')
+
+    # Your superuser dashboard logic here
     return render(request, 'superuser_dashboard.html')
 
 @login_required
 def moderator_dashboard(request):
+    # Ensure only moderators can access this view
+    if request.user.user_role != 'moderator':
+        messages.error(request, 'Unauthorized access.')
+        return redirect('login')
+
+    # Your moderator dashboard logic here
     return render(request, 'moderator_dashboard.html')
 
 @login_required
 def employee_dashboard(request):
+    # Ensure only employees can access this view
+    if request.user.user_role != 'employee':
+        messages.error(request, 'Unauthorized access.')
+        return redirect('login')
+
+    # Your employee dashboard logic here
     return render(request, 'employee_dashboard.html')
 
 def user_login(request):
