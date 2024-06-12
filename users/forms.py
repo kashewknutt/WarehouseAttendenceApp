@@ -32,6 +32,7 @@ class RegistrationForm(UserCreationForm):
                 position=self.cleaned_data['position'],
                 hire_date=self.cleaned_data['hire_date'],
                 phone_number=self.cleaned_data['phone_number'],
-                address=self.cleaned_data['address']
+                address=self.cleaned_data['address'],
+                employee_id=1
             )
         return user

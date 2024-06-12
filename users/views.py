@@ -15,7 +15,7 @@ def user_login(request):
             return redirect('dashboard')  # Redirect to dashboard or any other page
         else:
             messages.error(request, 'Invalid username or password.')
-    return render(request, 'registration/login.html')
+    return render(request, 'login.html')
 
 def user_logout(request):
     logout(request)
@@ -29,5 +29,5 @@ def user_registration(request):
             return redirect('login')  # Redirect to login page after successful registration
     else:
         form = RegistrationForm()
-    return render(request, 'registration/register.html', {'form': form})
+    return render(request, 'register.html', {'form': form})
 

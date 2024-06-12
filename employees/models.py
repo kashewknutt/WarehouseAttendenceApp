@@ -11,7 +11,7 @@ class Employee(models.Model):
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
     employee_id = models.CharField(max_length=5, unique=True, editable=False)  # Unique 5-digit employee ID
-
+    
     def save(self, *args, **kwargs):
         if not self.pk:  # Only generate ID for new employees
             last_employee = Employee.objects.order_by('-employee_id').first()
