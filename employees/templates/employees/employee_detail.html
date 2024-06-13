@@ -1,9 +1,11 @@
 <!-- employees/templates/employees/employee_detail.html -->
 
 <!DOCTYPE html>
+{% load static %}
 <html>
 <head>
     <title>Employee Details</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
     <h1>{{ employee.first_name }} {{ employee.last_name }}</h1>
