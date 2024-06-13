@@ -5,6 +5,7 @@ from .models import CustomUser, UserRolePermission
 from employees.models import Employee
 from django.contrib.auth.models import Permission
 from attendance.models import AttendanceRecord
+import face_recognition
 
 class RegistrationForm(UserCreationForm):
     first_name = forms.CharField(max_length=50)
@@ -25,6 +26,7 @@ class RegistrationForm(UserCreationForm):
             user.save()
             user.set_password(self.cleaned_data['password1'])  # Properly hash and save password
             user.save()
+            
             # Create corresponding Employee object
             employee = Employee.objects.create(
                 user=user,
@@ -36,22 +38,15 @@ class RegistrationForm(UserCreationForm):
                 phone_number=self.cleaned_data['phone_number'],
                 address=self.cleaned_data['address']
             )
-            # Assign permissions based on user role
-            if user.user_role == 'superuser':
-                permissions = Permission.objects.all()
-            elif user.user_role == 'moderator':
-                permissions = Permission.objects.filter(
-                    codename__in=['view_employee', 'view_attendance', 'generate_report']
-                )
-            else:  # employee
-                permissions = Permission.objects.filter(
-                    codename__in=['view_own_details', 'view_own_attendance']
-                )
-            # Save role permissions to the database
-            for permission in permissions:
-                UserRolePermission.objects.create(user_role=user.user_role, permission=permission)
-        return user
-    
+
+            # Capture facial data and store in Employee model
+            image_path = 'path_to_uploaded_image'  # Replace with actual path to uploaded image
+            image = face_recognition.load_image_file(image_path)
+            encoding = face_recognition.face_encodings(image)[0]  # Assuming one face per image
+            employee.facial_data = encoding.tobytes()
+            employee.save()
+
+        return user  
 
 class RecordAttendanceForm(forms.ModelForm):
     employee = forms.ModelChoiceField(queryset=Employee.objects.all(), label="Employee")

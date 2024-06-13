@@ -1,7 +1,8 @@
 # employees/models.py
 
+import numpy as np
 from django.db import models
-from users.models import CustomUser  # Import the CustomUser model
+from users.models import CustomUser
 
 class Employee(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='employee_profile')
@@ -13,7 +14,8 @@ class Employee(models.Model):
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
     employee_id = models.CharField(max_length=5, unique=True, editable=False)  # Unique 5-digit employee ID
-    
+    facial_data = models.BinaryField(blank=True, null=True)  # Store encoded facial data
+
     def save(self, *args, **kwargs):
         if not self.pk:  # Only generate ID for new employees
             last_employee = Employee.objects.order_by('-employee_id').first()
