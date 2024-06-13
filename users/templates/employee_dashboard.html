@@ -8,8 +8,11 @@
 </head>
 <body>
     <h1>Welcome, Employee!</h1>
-    <a href="{% url 'attendance_report' %}?user_id=1">
-        <button>Generate Attendance Report for User 1</button>
+    <a href="{% url 'attendance_report' %}?user_id={{ request.user.id }}">
+        <button>Generate Attendance Report</button>
+    </a>
+    <a href="{% url 'logout'%}">
+        <button>Logout</button>
     </a>
 </body>
 </html>

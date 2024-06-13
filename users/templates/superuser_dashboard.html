@@ -8,6 +8,16 @@
 </head>
 <body>
     <h1>Welcome, Superuser!</h1>
-    <!-- Add content specific to the superuser dashboard -->
+    <a href="{% url 'manage_attendance' %}">
+        <button>Manage Attendance</button>
+    </a>
+
+    <a href="{% url 'employee_attendance_report' %}">
+        <button>Generate Employee Attendance Report</button>
+    </a>
+    <a href="{% url 'logout'%}">
+        <button>Logout</button>
+    </a>
+
 </body>
 </html>

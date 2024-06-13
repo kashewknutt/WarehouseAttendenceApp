@@ -86,12 +86,13 @@ def user_login(request):
         password = request.POST.get('password')
         user = authenticate(username=username, password=password)
         if user is not None:
-            #login(request, user)
+            login(request, user)
             return redirect('dashboard')  # Redirect to dashboard or any other page
         else:
             messages.error(request, 'Invalid username or password.')
     return render(request, 'login.html')
 
+@login_required
 def user_logout(request):
     logout(request)
     return redirect('login')  # Redirect to login page after logout
