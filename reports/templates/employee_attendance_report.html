@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Attendance Report</title>
+</head>
+<body>
+    <h1>Employee Attendance Report</h1>
+
+    {% for data in attendance_data %}
+        <h2>{{ data.user.username }}'s Attendance Records:</h2>
+        <ul>
+            {% for record in data.attendance_records %}
+                <li>{{ record.date }}: {{ record.status }}</li>
+            {% empty %}
+                <li>No attendance records found.</li>
+            {% endfor %}
+        </ul>
+        <hr>
+    {% endfor %}
+    
+    <!-- Add more details and formatting as needed -->
+</body>
+</html>
