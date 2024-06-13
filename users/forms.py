@@ -1,4 +1,5 @@
 from datetime import date
+import os
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser, UserRolePermission
@@ -15,10 +16,11 @@ class RegistrationForm(UserCreationForm):
     hire_date = forms.DateField()
     phone_number = forms.CharField(max_length=15, required=False)
     address = forms.CharField(widget=forms.Textarea, required=False)
+    facial_image = forms.ImageField(required=True)  # Add field for facial image
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'first_name', 'last_name', 'email', 'position', 'hire_date', 'phone_number', 'address', 'password1', 'password2')
+        fields = ('username', 'first_name', 'last_name', 'email', 'position', 'hire_date', 'phone_number', 'address', 'facial_image', 'password1', 'password2')
 
     def save(self, commit=True):
         user = super(RegistrationForm, self).save(commit=False)
@@ -40,13 +42,24 @@ class RegistrationForm(UserCreationForm):
             )
 
             # Capture facial data and store in Employee model
-            image_path = 'path_to_uploaded_image'  # Replace with actual path to uploaded image
+            facial_image = self.cleaned_data['facial_image']
+            image_path = f'temp_{user.username}.jpg'
+            with open(image_path, 'wb+') as f:
+                for chunk in facial_image.chunks():
+                    f.write(chunk)
+            
             image = face_recognition.load_image_file(image_path)
-            encoding = face_recognition.face_encodings(image)[0]  # Assuming one face per image
-            employee.facial_data = encoding.tobytes()
-            employee.save()
+            encodings = face_recognition.face_encodings(image)
+            if encodings:
+                encoding = encodings[0]  # Assuming one face per image
+                employee.facial_data = encoding.tobytes()
+                employee.save()
 
-        return user  
+            # Optionally, delete the temp file after processing
+            os.remove(image_path)
+
+        return user
+    
 
 class RecordAttendanceForm(forms.ModelForm):
     employee = forms.ModelChoiceField(queryset=Employee.objects.all(), label="Employee")

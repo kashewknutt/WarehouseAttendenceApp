@@ -1,6 +1,5 @@
 # employees/models.py
 
-import numpy as np
 from django.db import models
 from users.models import CustomUser
 

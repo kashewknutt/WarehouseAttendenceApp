@@ -28,6 +28,6 @@ urlpatterns = [
     path('employees/', include('employees.urls')),
     path('attendance/', include('attendance.urls')),
     path('reports/', include('reports.urls')),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 print(settings.STATIC_ROOT)
