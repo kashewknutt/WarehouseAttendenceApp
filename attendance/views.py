@@ -69,7 +69,7 @@ def mark_attendance(request):
                 print(f"Stored Encoding for {employee.employee_id}: {stored_encoding}")
 
                 # Compare faces with a tolerance level
-                results = face_recognition.compare_faces([stored_encoding], face_encoding, tolerance=0.6)
+                results = face_recognition.compare_faces([stored_encoding], face_encoding, tolerance=1)
 
                 # Debug: Print the comparison result
                 print(f"Comparison result for {employee.employee_id}: {results[0]}")
