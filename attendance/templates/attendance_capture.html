@@ -1,0 +1,74 @@
+<!-- attendance/templates/attendance_capture.html -->
+
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Attendance</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h2>Mark Attendance</h2>
+    <form method="post" enctype="multipart/form-data" id="attendanceForm">
+        {% csrf_token %}
+        
+        <!-- Webcam capture section -->
+        <div>
+            <label for="image_data">Face Image:</label>
+            <div>
+                <video id="video" width="320" height="240" autoplay></video>
+                <button type="button" id="capture">Capture</button>
+                <canvas id="canvas" style="display:none;"></canvas>
+                <input type="hidden" id="image_data" name="image_data">
+            </div>
+        </div>
+
+        <button type="button" id="submitBtn">Mark Attendance</button>
+    </form>
+
+    <a href="{% url 'dashboard' %}">
+        <button>Back to Dashboard</button>
+    </a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var video = document.getElementById('video');
+            var canvas = document.getElementById('canvas');
+            var captureButton = document.getElementById('capture');
+            var imageDataInput = document.getElementById('image_data');
+
+            // Function to capture image from webcam
+            function captureImage() {
+                var context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                var dataURL = canvas.toDataURL('image/png');
+                imageDataInput.value = dataURL;
+                console.log("Captured Data URL: ", dataURL); // Debug log
+            }
+
+            // Start webcam on page load
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    video.srcObject = stream;
+                })
+                .catch(function(error) {
+                    console.error("Error accessing the camera: ", error);
+                });
+
+            // Capture button click event
+            captureButton.addEventListener('click', function() {
+                captureImage();
+            });
+
+            // Form submit event
+            var submitBtn = document.getElementById('submitBtn');
+            submitBtn.addEventListener('click', function() {
+                var form = document.getElementById('attendanceForm');
+                form.submit();
+            });
+        });
+    </script>
+</body>
+</html>

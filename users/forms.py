@@ -63,7 +63,7 @@ class RegistrationForm(UserCreationForm):
             for permission in permissions:
                 UserRolePermission.objects.create(user_role=user.user_role, permission=permission)
         return user
-
+    
 class RecordAttendanceForm(forms.ModelForm):
     employee = forms.ModelChoiceField(queryset=Employee.objects.all(), label="Employee")
     check_in_time = forms.TimeField(required=False, label="Check In Time")

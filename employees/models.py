@@ -1,4 +1,5 @@
 from django.db import models
+import numpy as np
 from users.models import CustomUser
 import json
 
@@ -26,12 +27,14 @@ class Employee(models.Model):
         super().save(*args, **kwargs)
 
     def set_face_encoding(self, encoding):
-        # Assuming the encoding is already a JSON string (base64 encoded string)
         if isinstance(encoding, str):
+            # Assume encoding is already JSON string
             self.face_encoding = encoding
-        else:
-            # If encoding is not a string, serialize it as JSON
+        elif isinstance(encoding, np.ndarray):
+            # Convert NumPy array to JSON string
             self.face_encoding = json.dumps(encoding.tolist())
+        else:
+            raise ValueError("Unsupported type for encoding")
 
     def get_face_encoding(self):
         if self.face_encoding:
