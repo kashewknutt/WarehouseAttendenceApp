@@ -11,7 +11,7 @@
 </head>
 <body>
     <h2>Register</h2>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" id="registerForm">
         {% csrf_token %}
         <div>
             <label for="username">Username:</label>
@@ -65,23 +65,30 @@
             <label for="password2">Confirm Password:</label>
             <input type="password" id="password2" name="password2">
         </div>
-        <button type="submit">Register</button>
+        <button type="button" id="submitBtn">Register</button>
     </form>
 
     <a href="{% url 'login' %}">
         <button>Login</button>
     </a>
 
-    <!-- JavaScript to handle webcam and capture image -->
     <script>
-        (function() {
-            // Get elements
+        document.addEventListener('DOMContentLoaded', function () {
             var video = document.getElementById('video');
             var canvas = document.getElementById('canvas');
             var captureButton = document.getElementById('capture');
             var faceImageInput = document.getElementById('face_image');
 
-            // Request access to the webcam
+            // Function to capture image from webcam
+            function captureImage() {
+                var context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                var dataURL = canvas.toDataURL('image/png');
+                faceImageInput.value = dataURL;
+                console.log("Captured Data URL: ", dataURL); // Debug log
+            }
+
+            // Start webcam on page load
             navigator.mediaDevices.getUserMedia({ video: true })
                 .then(function(stream) {
                     video.srcObject = stream;
@@ -90,14 +97,19 @@
                     console.error("Error accessing the camera: ", error);
                 });
 
-            // Capture the image from the webcam
+            // Capture button click event
             captureButton.addEventListener('click', function() {
-                var context = canvas.getContext('2d');
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                var dataURL = canvas.toDataURL('image/png');
-                faceImageInput.value = dataURL;  // Set the captured image data to the hidden input field
+                captureImage();
             });
-        })();
+
+            // Form submit event
+            var submitBtn = document.getElementById('submitBtn');
+            submitBtn.addEventListener('click', function() {
+                var form = document.getElementById('registerForm');
+                form.submit();
+            });
+        });
     </script>
+
 </body>
 </html>

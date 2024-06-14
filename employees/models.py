@@ -26,7 +26,12 @@ class Employee(models.Model):
         super().save(*args, **kwargs)
 
     def set_face_encoding(self, encoding):
-        self.face_encoding = json.dumps(encoding.tolist())
+        # Assuming the encoding is already a JSON string (base64 encoded string)
+        if isinstance(encoding, str):
+            self.face_encoding = encoding
+        else:
+            # If encoding is not a string, serialize it as JSON
+            self.face_encoding = json.dumps(encoding.tolist())
 
     def get_face_encoding(self):
         if self.face_encoding:

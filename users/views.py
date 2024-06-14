@@ -99,7 +99,7 @@ def user_logout(request):
 
 def user_registration(request):
     if request.method == 'POST':
-        form = RegistrationForm(request.POST)
+        form = RegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('login')  # Redirect to login page after successful registration

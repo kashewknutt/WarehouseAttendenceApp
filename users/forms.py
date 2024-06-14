@@ -43,12 +43,10 @@ class RegistrationForm(UserCreationForm):
                 address=self.cleaned_data['address']
             )
 
-            # Decode the base64 face image and process it
+            # Save face image to employee (assuming you handle base64 decoding and processing in JavaScript)
             face_image_data = self.cleaned_data['face_image']
-            face_encoding = self.process_face_image(face_image_data)
-            if face_encoding:
-                employee.set_face_encoding(face_encoding)
-                employee.save()
+            employee.set_face_encoding(face_image_data)
+            employee.save()
             
             # Assign permissions based on user role
             if user.user_role == 'superuser':
@@ -65,26 +63,6 @@ class RegistrationForm(UserCreationForm):
             for permission in permissions:
                 UserRolePermission.objects.create(user_role=user.user_role, permission=permission)
         return user
-
-    def process_face_image(self, base64_data):
-        try:
-            # Decode the base64 image
-            image_data = base64.b64decode(base64_data.split(',')[1])
-            image = Image.open(BytesIO(image_data))
-
-            # Convert the image to a format that face_recognition can use
-            image = image.convert('RGB')
-            image_array = face_recognition.load_image_file(BytesIO(image.tobytes()))
-
-            # Find face encodings
-            face_encodings = face_recognition.face_encodings(image_array)
-            if face_encodings:
-                return face_encodings[0]  # Return the first face encoding found
-            return None
-        except Exception as e:
-            print(f"Error processing face image: {e}")
-            return None
-    
 
 class RecordAttendanceForm(forms.ModelForm):
     employee = forms.ModelChoiceField(queryset=Employee.objects.all(), label="Employee")
