@@ -1,12 +1,15 @@
 from datetime import date
-import os
+from .models import CustomUser, UserRolePermission
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import CustomUser, UserRolePermission
 from employees.models import Employee
 from django.contrib.auth.models import Permission
 from attendance.models import AttendanceRecord
 import face_recognition
+import base64
+from django.core.files.uploadedfile import SimpleUploadedFile
+from io import BytesIO
+from PIL import Image
 
 class RegistrationForm(UserCreationForm):
     first_name = forms.CharField(max_length=50)
@@ -16,11 +19,11 @@ class RegistrationForm(UserCreationForm):
     hire_date = forms.DateField()
     phone_number = forms.CharField(max_length=15, required=False)
     address = forms.CharField(widget=forms.Textarea, required=False)
-    facial_image = forms.ImageField(required=True)  # Add field for facial image
+    face_image = forms.CharField(widget=forms.HiddenInput(), required=True)  # Hidden field to store the base64 image
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'first_name', 'last_name', 'email', 'position', 'hire_date', 'phone_number', 'address', 'facial_image', 'password1', 'password2')
+        fields = ('username', 'first_name', 'last_name', 'email', 'position', 'hire_date', 'phone_number', 'address', 'password1', 'password2', 'face_image')
 
     def save(self, commit=True):
         user = super(RegistrationForm, self).save(commit=False)
@@ -28,7 +31,6 @@ class RegistrationForm(UserCreationForm):
             user.save()
             user.set_password(self.cleaned_data['password1'])  # Properly hash and save password
             user.save()
-            
             # Create corresponding Employee object
             employee = Employee.objects.create(
                 user=user,
@@ -41,24 +43,47 @@ class RegistrationForm(UserCreationForm):
                 address=self.cleaned_data['address']
             )
 
-            # Capture facial data and store in Employee model
-            facial_image = self.cleaned_data['facial_image']
-            image_path = f'temp_{user.username}.jpg'
-            with open(image_path, 'wb+') as f:
-                for chunk in facial_image.chunks():
-                    f.write(chunk)
-            
-            image = face_recognition.load_image_file(image_path)
-            encodings = face_recognition.face_encodings(image)
-            if encodings:
-                encoding = encodings[0]  # Assuming one face per image
-                employee.facial_data = encoding.tobytes()
+            # Decode the base64 face image and process it
+            face_image_data = self.cleaned_data['face_image']
+            face_encoding = self.process_face_image(face_image_data)
+            if face_encoding:
+                employee.set_face_encoding(face_encoding)
                 employee.save()
-
-            # Optionally, delete the temp file after processing
-            os.remove(image_path)
-
+            
+            # Assign permissions based on user role
+            if user.user_role == 'superuser':
+                permissions = Permission.objects.all()
+            elif user.user_role == 'moderator':
+                permissions = Permission.objects.filter(
+                    codename__in=['view_employee', 'view_attendance', 'generate_report']
+                )
+            else:  # employee
+                permissions = Permission.objects.filter(
+                    codename__in=['view_own_details', 'view_own_attendance']
+                )
+            # Save role permissions to the database
+            for permission in permissions:
+                UserRolePermission.objects.create(user_role=user.user_role, permission=permission)
         return user
+
+    def process_face_image(self, base64_data):
+        try:
+            # Decode the base64 image
+            image_data = base64.b64decode(base64_data.split(',')[1])
+            image = Image.open(BytesIO(image_data))
+
+            # Convert the image to a format that face_recognition can use
+            image = image.convert('RGB')
+            image_array = face_recognition.load_image_file(BytesIO(image.tobytes()))
+
+            # Find face encodings
+            face_encodings = face_recognition.face_encodings(image_array)
+            if face_encodings:
+                return face_encodings[0]  # Return the first face encoding found
+            return None
+        except Exception as e:
+            print(f"Error processing face image: {e}")
+            return None
     
 
 class RecordAttendanceForm(forms.ModelForm):
