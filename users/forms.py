@@ -56,6 +56,10 @@ class RegistrationForm(UserCreationForm):
             # Convert to PIL image
             image = Image.open(BytesIO(img_data))
 
+            # Convert image to RGB if it is not
+            if image.mode != 'RGB':
+                image = image.convert('RGB')
+
             # Convert image to numpy array
             image_array = np.array(image)
 
