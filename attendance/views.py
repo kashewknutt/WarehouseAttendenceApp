@@ -16,7 +16,8 @@ def mark_attendance(request):
     if request.method == "POST":
         image_data = request.POST.get('image_data')
         if not image_data:
-            return JsonResponse({'error': 'No image data provided'}, status=400)
+            print('No image data provided')
+            return redirect(render('login'))
 
         # Decode the base64 image
         format, imgstr = image_data.split(';base64,')
@@ -34,7 +35,8 @@ def mark_attendance(request):
         face_encodings = face_recognition.face_encodings(image_array)
 
         if not face_encodings:
-            return JsonResponse({'error': 'No face found in the image'}, status=400)
+            print({'error': 'No face found in the image'})
+            return redirect(render('login'))
 
         # Debug: Print the captured face encoding
         print(f"Captured Face Encoding: {face_encodings}")
@@ -69,7 +71,7 @@ def mark_attendance(request):
                 print(f"Stored Encoding for {employee.employee_id}: {stored_encoding}")
 
                 # Compare faces with a tolerance level
-                results = face_recognition.compare_faces([stored_encoding], face_encoding, tolerance=1)
+                results = face_recognition.compare_faces([stored_encoding], face_encoding, tolerance=2)
 
                 # Debug: Print the comparison result
                 print(f"Comparison result for {employee.employee_id}: {results[0]}")
@@ -88,11 +90,11 @@ def mark_attendance(request):
                         attendance_record.status = 'present'
                         attendance_record.save()
                         message = f"Attendance for {employee.first_name} {employee.last_name} has been successfully marked."
-                        return redirect('dashboard')
+                        return redirect(render('dashboard'))
                     else:
-                        return redirect('dashboard')
+                        return redirect(render('dashboard'))
 
         if not found_match:
-            return JsonResponse({'error': 'No matching employee found'}, status=404)
+            return redirect(render('login'))
 
     return render(request, 'attendance_capture.html')
