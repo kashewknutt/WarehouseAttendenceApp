@@ -9,6 +9,16 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
+    {% if message %}
+        <script type="text/javascript">
+            window.onload = function() {
+                alert("{{ message }}");
+            };
+        </script>
+        <!-- Clear the session message after showing the alert -->
+        {% request.session.pop('message') %}
+    {% endif %}
+
     <h1>Welcome, Employee!</h1>
     <a href="{% url 'attendance_report' %}?user_id={{ request.user.id }}">
         <button>Generate Attendance Report</button>

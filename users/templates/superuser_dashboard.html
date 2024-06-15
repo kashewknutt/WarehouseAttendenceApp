@@ -9,6 +9,16 @@
     <title>Superuser Dashboard</title>
 </head>
 <body>
+    {% if message %}
+        <script type="text/javascript">
+            window.onload = function() {
+                alert("{{ message }}");
+            };
+        </script>
+        <!-- Clear the session message after showing the alert -->
+        {% request.session.pop('message') %}
+    {% endif %}
+
     <h1>Welcome, Superuser!</h1>
     <a href="{% url 'manage_attendance' %}">
         <button>Manage Attendance</button>

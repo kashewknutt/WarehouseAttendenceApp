@@ -8,6 +8,16 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
+    {% if message %}
+        <script type="text/javascript">
+            window.onload = function() {
+                alert("{{ message }}");
+            };
+        </script>
+        <!-- Clear the session message after showing the alert -->
+        {% request.session.pop('message') %}
+    {% endif %}
+
     <h1>Moderator Dashboard</h1>
 
     <!-- Button to navigate to the Attendance Management Page -->

@@ -1,6 +1,6 @@
 # attendance/views.py
 
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.http import JsonResponse
 import face_recognition
 import numpy as np
@@ -87,7 +87,9 @@ def mark_attendance(request):
                         attendance_record.check_in_time = datetime.now().time()
                         attendance_record.status = 'present'
                         attendance_record.save()
-                        return JsonResponse({'success': 'Attendance marked successfully'}, status=200)
+                        #code to redirct to dashboard after marking attendance with a notification of attendance of employee marked succesfully
+                        request.session['message'] = f"Attendance for {employee.first_name} {employee.last_name} has been successfully marked."
+                        return redirect('dashboard')
                     else:
                         return JsonResponse({'info': 'Attendance already marked for today'}, status=200)
 
