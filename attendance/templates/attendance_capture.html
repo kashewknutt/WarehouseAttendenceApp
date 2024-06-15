@@ -46,7 +46,7 @@
             var imageDataInput = document.getElementById('image_data');
             var capturedImageDataTextArea = document.getElementById('captured_image_data');
             var submitBtn = document.getElementById('submitBtn');
-            var dataURL;
+            var dataURL = 0;
 
             // Function to capture image from webcam
             function captureImage() {
@@ -75,43 +75,10 @@
                 captureImage();
             });
 
-            // Submit form via AJAX
             submitBtn.addEventListener('click', function() {
-                var csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
-                alert(dataURL)
-                //var image = dataURL;
-
-                if (!dataURL) {
-                    alert('No image data provided. Please capture an image first.');
-                    return;
-                }
-
-                // Log the data being sent
-                alert("Submitting Image Data: ", dataURL);
-
-                fetch("{% url 'mark_attendance' %}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken,
-                    },
-                    body: JSON.stringify({ image_data: dataURL })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(data.message); // Show the success message in a popup
-                        // Redirect after OK is clicked on the alert
-                        window.location.href = "{% url 'dashboard' %}";
-                    } else if (data.info) {
-                        alert(data.info);
-                    } else if (data.error) {
-                        alert(data.error);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+            var form = document.getElementById('attendanceForm');
+            alert("Attendance Marked Successfully!");
+            form.submit();
             });
         });
     </script>

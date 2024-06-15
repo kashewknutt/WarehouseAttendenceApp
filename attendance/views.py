@@ -88,9 +88,9 @@ def mark_attendance(request):
                         attendance_record.status = 'present'
                         attendance_record.save()
                         message = f"Attendance for {employee.first_name} {employee.last_name} has been successfully marked."
-                        return JsonResponse({'success': True, 'message': message})
+                        return redirect('dashboard')
                     else:
-                        return JsonResponse({'info': 'Attendance already marked for today'}, status=200)
+                        return redirect('dashboard')
 
         if not found_match:
             return JsonResponse({'error': 'No matching employee found'}, status=404)
