@@ -11,9 +11,9 @@
 </head>
 <body>
     <h2>Mark Attendance</h2>
-    <form method="post" enctype="multipart/form-data" id="attendanceForm">
+    <form id="attendanceForm">
         {% csrf_token %}
-        
+
         <!-- Webcam capture section -->
         <div>
             <label for="image_data">Face Image:</label>
@@ -23,6 +23,12 @@
                 <canvas id="canvas" style="display:none;"></canvas>
                 <input type="hidden" id="image_data" name="image_data">
             </div>
+        </div>
+
+        <!-- Textarea to display captured image data -->
+        <div>
+            <label for="captured_image_data">Captured Image Data:</label>
+            <textarea id="captured_image_data" rows="5" cols="80" readonly></textarea>
         </div>
 
         <button type="button" id="submitBtn">Mark Attendance</button>
@@ -38,6 +44,8 @@
             var canvas = document.getElementById('canvas');
             var captureButton = document.getElementById('capture');
             var imageDataInput = document.getElementById('image_data');
+            var capturedImageDataTextArea = document.getElementById('captured_image_data');
+            var submitBtn = document.getElementById('submitBtn');
 
             // Function to capture image from webcam
             function captureImage() {
@@ -45,6 +53,10 @@
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
                 var dataURL = canvas.toDataURL('image/png');
                 imageDataInput.value = dataURL;
+
+                // Display the captured image data in the textarea
+                capturedImageDataTextArea.value = dataURL;
+
                 console.log("Captured Data URL: ", dataURL); // Debug log
             }
 
@@ -62,11 +74,38 @@
                 captureImage();
             });
 
-            // Form submit event
-            var submitBtn = document.getElementById('submitBtn');
+            // Submit form via AJAX
             submitBtn.addEventListener('click', function() {
-                var form = document.getElementById('attendanceForm');
-                form.submit();
+                var csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+                var imageData = imageDataInput.value;
+
+                if (!imageData) {
+                    alert('No image data provided. Please capture an image first.');
+                    return;
+                }
+
+                fetch("{% url 'mark_attendance' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                    },
+                    body: JSON.stringify({ image_data: imageData })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message); // Show the success message in a popup
+                        window.location.href = "{% url 'dashboard' %}"; // Redirect to the dashboard after "OK"
+                    } else if (data.info) {
+                        alert(data.info);
+                    } else if (data.error) {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
             });
         });
     </script>

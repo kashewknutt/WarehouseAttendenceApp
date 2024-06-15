@@ -87,9 +87,8 @@ def mark_attendance(request):
                         attendance_record.check_in_time = datetime.now().time()
                         attendance_record.status = 'present'
                         attendance_record.save()
-                        #code to redirct to dashboard after marking attendance with a notification of attendance of employee marked succesfully
-                        request.session['message'] = f"Attendance for {employee.first_name} {employee.last_name} has been successfully marked."
-                        return redirect('dashboard')
+                        message = f"Attendance for {employee.first_name} {employee.last_name} has been successfully marked."
+                        return JsonResponse({'success': True, 'message': message})
                     else:
                         return JsonResponse({'info': 'Attendance already marked for today'}, status=200)
 
