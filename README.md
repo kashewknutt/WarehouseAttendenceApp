@@ -24,7 +24,7 @@ WarehouseAttendanceApp is a powerful, Django-based web application designed to s
 
 ## Demo
 
-🎥 Check out a video walkthrough of the app in action here: [Video Link](#) (Replace `#` with your video link)
+🎥 Check out a video walkthrough of the app in action here: [Working Walkthrough](github.com/kashewknutt/WarehouseAttendenceApp/blob/main/screensnaps/LinkedInPost.mp4) (Replace `#` with your video link)
 
 ## Getting Started
 
