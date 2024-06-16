@@ -45,40 +45,29 @@ class RegistrationForm(UserCreationForm):
                 phone_number=self.cleaned_data['phone_number'],
                 address=self.cleaned_data['address']
             )
-
             # Save face image to employee (assuming you handle base64 decoding and processing in JavaScript)
             face_image_data = self.cleaned_data['face_image']
-
             # Decode base64 image data
             format, imgstr = face_image_data.split(';base64,')
             img_data = base64.b64decode(imgstr)
-
             # Convert to PIL image
             image = Image.open(BytesIO(img_data))
-
             # Convert image to RGB if it is not
             if image.mode != 'RGB':
                 image = image.convert('RGB')
-
             # Convert image to numpy array
             image_array = np.array(image)
-
             # Extract face encodings from the image
             face_encodings = face_recognition.face_encodings(image_array)
-
             if not face_encodings:
                 raise ValueError('No face found in the provided image')
-
             # Assuming one face found, use the first encoding
             face_encoding = face_encodings[0]
-
             # Convert face encoding to list for JSON storage
             face_encoding_list = face_encoding.tolist()
-
             # Save face encoding as JSON string to employee model
             employee.face_encoding = json.dumps(face_encoding_list)
             employee.save()
-            
             # Assign permissions based on user role
             if user.user_role == 'superuser':
                 permissions = Permission.objects.all()
