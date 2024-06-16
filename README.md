@@ -12,7 +12,6 @@ WarehouseAttendanceApp is a powerful, Django-based web application designed to s
 7. [Usage](#usage)
 8. [Troubleshooting](#troubleshooting)
 9. [Contributing](#contributing)
-10. [License](#license)
 
 ## Features
 
