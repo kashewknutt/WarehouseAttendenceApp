@@ -75,10 +75,27 @@
                 captureImage();
             });
 
+            // Submit button click event
             submitBtn.addEventListener('click', function() {
-            var form = document.getElementById('attendanceForm');
-            alert("Attendance Marked Successfully!");
-            form.submit();
+                var form = document.getElementById('attendanceForm');
+                var formData = new FormData(form);
+                formData.append('image_data', dataURL); // Append dataURL to the form data
+                fetch('/attendance/mark/', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        window.location.href = data.redirect_url;
+                    } else {
+                        alert(data.message || 'An error occurred.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
             });
         });
     </script>

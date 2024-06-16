@@ -84,15 +84,15 @@ def mark_attendance(request):
                         user=employee.user,
                         date=today
                     )
+                    message = f"Attendance for {employee.first_name} {employee.last_name} has been successfully marked."
                     if created:
                         # Mark the current time as check-in if no record exists for today
                         attendance_record.check_in_time = datetime.now().time()
                         attendance_record.status = 'present'
                         attendance_record.save()
-                        message = f"Attendance for {employee.first_name} {employee.last_name} has been successfully marked."
-                        return redirect(render('dashboard'))
+                        return JsonResponse({'success': True, 'message': message, 'redirect_url': '/users/dashboard/'})
                     else:
-                        return redirect(render('dashboard'))
+                        return JsonResponse({'success': True, 'message': message, 'redirect_url': '/users/dashboard/'})
 
         if not found_match:
             return redirect(render('login'))
